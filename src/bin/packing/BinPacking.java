@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import com.softtechdesign.ga.*;
+import java.io.*;
+import javax.swing.*;
 //import javax.swing.*;
 
 /**
@@ -100,8 +102,11 @@ public class BinPacking extends GASequenceList
 //////////////////////////////////////////////////////////////////////////////////////MAIN
     public static void main(String[] args) throws FileNotFoundException
     {
-        String a="C:/dane.txt";
-        int []dane_z_pliku = czytaj_plik(a);//dziala(bez obslugi wyjatkow}
+        
+        String plik=JOptionPane.showInputDialog("Podaj ścieżkę do pliku:");
+        
+        //String a="C:/dane.txt";
+        int []dane_z_pliku = czytaj_plik(plik);//dziala(bez obslugi wyjatkow}
         String indeksy = generuj_index_element(dane_z_pliku[1]);
         
         //wyswietl:
