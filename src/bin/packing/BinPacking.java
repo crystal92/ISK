@@ -24,13 +24,14 @@ import javax.swing.*;
 public class BinPacking extends GASequenceList
 {
     int rozmiar_zadany_pudelka;
+    int pudelko[];
     
     public BinPacking(int []dane,String indeksy_elementow) throws GAException
     {
         super(  dane[1], //size of chromosome
                 300, //population has N chromosomes 300
                 0.7, //crossover probability
-                100, //random selection chance % (regardless of fitness) 10
+                10, //random selection chance % (regardless of fitness) 10
                 5000, //max generations 2000
                 0, //num prelim runs (to build good breeding stock for final/full run)
                 25, //max generations per prelim run
@@ -41,6 +42,7 @@ public class BinPacking extends GASequenceList
                 true); //compute statisitics?
         
         rozmiar_zadany_pudelka=dane[0];
+        pudelko = new int[dane[1]];
         setInitialSequence(dane);
     }
     
@@ -71,6 +73,48 @@ public class BinPacking extends GASequenceList
         int geneIndex1;//nazwa genu/elementu podanego w konstruktorze
 
         pojemnosc_pudelka = 0;
+                
+        char genes[] = this.getChromosome(iChromIndex).getGenes();
+        int lenChromosome = genes.length;
+        if(lenChromosome!=0)
+            ilosc_pudelek=1;
+           // System.out.println(" cycek ");
+        
+        for (int i = 0; i < lenChromosome; i++)
+        {
+            geneIndex1 = this.possGeneValues.indexOf(genes[i]);  //optimize this
+            
+            rozmiar_elementu = this.sequence[geneIndex1];
+            
+            //sprawdza wszystkie pudełka od pierwszego czy konkretny element się zmieści
+            //jak się zmieści przerywa sprawdzanie
+            for(int j=1;j<=ilosc_pudelek;j++){ 
+                
+                if(pudelko[j] + rozmiar_elementu <= rozmiar_zadany_pudelka){
+                    pudelko[j]+=rozmiar_elementu;
+                    break;
+                }
+                else if(j==ilosc_pudelek){
+                    ilosc_pudelek++;
+                    pudelko[(int)ilosc_pudelek]=(int)rozmiar_elementu;
+                    break;
+                }
+                    
+            }
+            
+           
+            
+        }
+
+        return -ilosc_pudelek;
+    }
+    
+    protected double getFitnesss2(int iChromIndex)
+    {
+        double pojemnosc_pudelka, rozmiar_elementu, ilosc_pudelek=0;
+        int geneIndex1;//nazwa genu/elementu podanego w konstruktorze
+
+        pojemnosc_pudelka = 0;
         
         
         char genes[] = this.getChromosome(iChromIndex).getGenes();
@@ -86,7 +130,7 @@ public class BinPacking extends GASequenceList
             rozmiar_elementu = this.sequence[geneIndex1];
             
             
-            if(pojemnosc_pudelka+rozmiar_elementu>  rozmiar_zadany_pudelka  ){
+            if(pojemnosc_pudelka+rozmiar_elementu >  rozmiar_zadany_pudelka+1  ){
                 pojemnosc_pudelka=rozmiar_elementu;
                 ilosc_pudelek++;
                  
@@ -118,8 +162,8 @@ public class BinPacking extends GASequenceList
         try
         {
             BinPacking test = new BinPacking(dane_z_pliku,indeksy);
-            Thread threadSalesman = new Thread(test);
-            threadSalesman.start();
+            Thread threadBinpacking = new Thread(test);
+            threadBinpacking.start();
         }
         catch (GAException gae)
         {
